@@ -312,7 +312,7 @@ def do_logon(args):
    if args.authentication == "token":
       account_type, accesstoken, skypetoken = check_token_format(args.bearertoken, args.skypetoken)
       teams_enrolled = account_is_teams_enrolled(accesstoken, account_type)
-      return account_type, accesstoken, skypetoken, teams_enrolled
+      return account_type, accesstoken, skypetoken, teams_enrolled, None, None, None
 
    # If device code or password-based authentication is used, the username needs to be provided to check if the account is a personal or corporate account
    if not args.username:
@@ -339,6 +339,8 @@ def do_logon(args):
    elif args.authentication == "password":
       result, app = logon_with_credentials( auth_metadata, args.username, args.password, account_type )
 
+   print(result, app)
+
    # Login not successful
    if "access_token" not in result:
       if "Error validating credentials due to invalid username or password" in result.get("error_description"):
@@ -359,5 +361,6 @@ def do_logon(args):
       result_tokenlogin = logon_with_accesstoken(auth_metadata, app, scope_list=["service::api.fl.spaces.skype.com::MBI_SSL openid profile"])
       skypetoken = get_skype_token(result_tokenlogin["access_token"])
       p_success("Successfully retrieved skype token")
+   print(skypetoken)
 
    return account_type.get('type'), result["access_token"], skypetoken, teams_enrolled, refresh_token, app, auth_metadata
